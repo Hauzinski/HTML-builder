@@ -1,16 +1,16 @@
-const { mkdir, copyFile, readdir} = require('fs').promises;
+const { mkdir, copyFile, readdir, rm } = require('fs').promises;
 const path = require('path');
 
 async function getFiles() {
   try {
     const dirPath = path.join(__dirname, 'files');
-    const newDirPath = path.join(__dirname, 'files-copy');    
+    const newDirPath = path.join(__dirname, 'files-copy');
     const files = await readdir(dirPath, { withFileTypes: true });    
     for (const file of files) {
       if (file.isFile()) {
         const filePath = path.join(dirPath, file.name);        
         const newFilePath = path.join(newDirPath, file.name);        
-        await copyFile(filePath, newFilePath);
+        await copyFile(filePath, newFilePath);        
       }
     }
     console.log('Files copied to new directory');
@@ -21,6 +21,7 @@ async function getFiles() {
 
 async function makeDir() {
   try {
+    await rm(path.join(__dirname, 'files-copy'), { recursive: true, force: true });
     await mkdir(path.join(__dirname, 'files-copy'), { recursive: true });
   } catch (err) {
     console.error(err);
